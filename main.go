@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"typeo/config"
-	"typeo/routes"
+	// "typeo/routes"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,7 +17,7 @@ func main() {
 		c.JSON(200, "Hello")
 	})
 	r.GET("/type", config.LoadSocketServer)
-	routes.SetUpAuthRoutes(r)
-	routes.SetUpUserRoutes(r)
+	// routes.SetUpAuthRoutes(r)
+	// routes.SetUpUserRoutes(r)
 	r.Run(":8080")
 }

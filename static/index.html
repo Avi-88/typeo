@@ -1,0 +1,58 @@
+    <script>
+        let socket = null;
+        let sessionId = null;
+        let inputText = "";
+
+        function init(event) {
+            event.preventDefault();
+            socket = new WebSocket("ws://localhost:8080/type");
+            
+            socket.onopen = function() {
+                console.log("Connected to server");
+                const initMessage = {
+                    type: "Init",
+                    data: "Start the test"
+                };
+                socket.send(JSON.stringify(initMessage));
+            };
+
+            socket.onmessage = function(event) {
+                const message = JSON.parse(event.data);
+                switch(message.type) {
+                    case "Init":
+                        document.getElementById("prompt").innerHTML = message.data;
+                        sessionId = message.session_id;  // Match the server's JSON field
+                        break;
+                    case "Progress":
+                        document.getElementById("wpm").innerHTML = message.wpm;
+                        document.getElementById("accuracy").innerHTML = message.accuracy + "%";
+                        break;
+                }
+            };
+
+            socket.onerror = function(error) {
+                console.error("WebSocket error:", error);
+            };
+
+            socket.onclose = function() {
+                console.log("Connection closed");
+                socket = null;
+                sessionId = null;
+            };
+        }
+
+        function handleInput(event) {
+            event.preventDefault();
+            if (!socket) {
+                alert("Please start the test first");
+                return;
+            }
+            inputText = event.target.value;
+            const progressMessage = {
+                type: "Progress",
+                session_id: sessionId,  // Match the server's JSON field
+                data: inputText
+            };
+            socket.send(JSON.stringify(progressMessage));
+        }
+    </script> 
